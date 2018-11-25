@@ -13,6 +13,7 @@ from matplotlib import pyplot as plt
 print X_train.shape
 # (60000, 28, 28) this means we have 60,000 samples and all the images are 28 pixels by 28 pixels
 
+plt.figure()
 plt.imshow(X_train[0])
 
 # We reshape the input data to have a depth of 1 (grey scale)
@@ -33,9 +34,18 @@ X_test /= 255
 
 # Defining the model
 model = Sequential()
-model.add(Convolution2D(32, 3, 3, activation='relu', input_shape=(1,28,28)))
-# 32 is the  number of convolutional filters to use. Frist 3 is the number of rows in each convolution kernel and second 3 is the number of columns in each kernel.
+model.add(Convolution2D(32, kernel_size=(3, 3), activation='relu', input_shape=(28, 28, 1)))
+# 32 is the number of convolutional filters to use. Frist 3 is the number of rows in each convolution kernel and second 3 is the number of columns in each kernel.
 
+print model.output_shape
+# (None, 32, 26, 26)
+
+model.add(Convolution2D(32, 3, 3, activation='relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
+# MaxPooling2D is a way to reduce the number of parameters in our model by sliding a 2x2 pooling filter across the previous layer and taking the max of the 4 values in the 2x2 filter.
+
+model.add(Dropout(0.25))
+# Dropout regularizes the model and prevents overfitting
 
 
 
