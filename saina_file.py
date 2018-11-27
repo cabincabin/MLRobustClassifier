@@ -8,6 +8,7 @@ from keras.datasets import mnist
 from keras.callbacks import TensorBoard
 from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
+import custome_layer
 
 
 np.random.seed(123)  # for reproducibility
@@ -74,15 +75,13 @@ model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=
 model.fit(X_train, Y_train, batch_size=32, epochs=10, verbose=1)
 
 # Evaluate the model on test data
-#score = model.evaluate(X_test, Y_test, verbose=0)
-#print score
 score = model.evaluate(X_test, Y_test, verbose=0)
 print "test loss:", score[0]
 print "test accuracy:",  score[1]
-
 # score[0] gives you the test loss and score[1] gives you the accuracy
 
 tbCallBack = TensorBoard(log_dir='./log', histogram_freq=1, write_graph=True, write_grads=True, batch_size=32, write_images=True)
+
 # We can use a call back to look into the internal state of the model during training
 model.fit(X_train, Y_train, batch_size=32, epochs=10, verbose=1, validation_data=(X_test, Y_test), callbacks=[tbCallBack])
 
