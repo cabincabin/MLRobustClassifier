@@ -10,14 +10,16 @@ from PIL import ImageFilter
 imageInputPath = "ImageFiles/"
 imageOutputScaled = "Imagefiles256x256/"
 imageOutputEdge = "ImagefilesEdge256x256/"
+pointsOutput = "PointAnnotationsSet256x256.txt"
 
 def GCPPath(UseGCP):
     if UseGCP == True:
         subprocess.call(["gsutil", "cp", "gs://wpiopenimageskaggle/imageIds/PointAnnotationsSet.txt", "PointAnnotationsSet.txt"])
-        global imageInputPath, imageOutputScaled, imageOutputEdge
+        global imageInputPath, imageOutputScaled, imageOutputEdge, pointsOutput
         imageInputPath = "gs://wpiopenimageskaggle/ImageFiles/"
         imageOutputScaled = "gs://wpiopenimageskaggle/Imagefiles256x256/"
         imageOutputEdge = "gs://wpiopenimageskaggle/ImagefilesEdge256x256/"
+        pointsOutput = "gs://wpiopenimageskaggle/imageIds/PointAnnotationsSet256x256.txt"
 
 
 def read_file_JSON(filename):
@@ -38,29 +40,36 @@ def _open_file_read_binary(uri):
 
 
 def getImageGCPPaths():
-    global imageInputPath, imageOutputScaled, imageOutputEdge
+    global imageInputPath, imageOutputScaled, imageOutputEdge, pointsOutput
     points = read_file_JSON("PointAnnotationsSet.txt")
-    path = []
-    label = []
-    for point in points:
-        path.append([[imageInputPath + point['id'] + ".jpg"], [imageOutputScaled + point['id'] + ".jpg"], [imageOutputEdge + point['id'] + ".jpg"]])
-        label.append(point['label'])
+    badIndexes = []
+    for index, point in enumerate(points):
+        uriInp = imageInputPath + point['id'] + ".jpg"
+        uricrop = imageOutputScaled + point['id'] + ".jpg"
+        uricropEdge = imageOutputEdge + point['id'] + ".jpg"
+        #label.append(point['label'])
 
-    size = 256,256
-    for uri in path:
+        size = 256,256
+        crop = 0,0,256,256
         try:
-            with _open_file_read_binary(uri[0]) as f:
+
+            with _open_file_read_binary(uriInp) as f:
                 image_bytes = f.read()
                 img = Image.open(io.BytesIO(image_bytes)).convert('L')
-                img.thumbnail(size, Image.ANTIALIAS)
+                img = img.resize(size, Image.ANTIALIAS)
                 imgWEdges = img.copy().filter(ImageFilter.FIND_EDGES)
-                with file_io.FileIO(uri[1], mode = 'wb') as fThumb:
+                with file_io.FileIO(uricrop, mode = 'wb') as fThumb:
                     img.save(fThumb, "JPEG")
-                with file_io.FileIO(uri[2], mode = 'wb') as fEdge:
-                    img.save(fEdge, "JPEG")
+                with file_io.FileIO(uricropEdge, mode = 'wb') as fEdge:
+                    imgWEdges.save(fEdge, "JPEG")
 
         except:
-            path.remove(uri)
+            badIndexes.append(index)
+    for index in sorted(badIndexes, reverse=True):
+        points.pop(index)
+
+    with file_io.FileIO(pointsOutput, mode='w') as pointSaveJson:
+        pointSaveJson.write(json.dumps(points))
 
 
 
