@@ -5,7 +5,7 @@ from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras.utils import np_utils
 from keras.datasets import mnist
-from keras.callbackss import TensorBoard
+from keras.callbacks import TensorBoard
 from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
 
@@ -34,8 +34,9 @@ else:
 #X_train = X_train.reshape(X_train.shape[0], 1, 28, 28)
 #X_test = X_test.reshape(X_test.shape[0], 1, 28, 28)
 
-print X_train.shape
+print "X_train.shape:",  X_train.shape
 # (60000, 1, 28, 28)
+print "X_test.shape:",  X_test.shape
 
 # Then we convert the data type to float
 
@@ -68,14 +69,14 @@ model.add(Dense(10, activation='softmax'))
 # Final layer has the output size of 10 to correspond to the number of classes
 
 model.summary()
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 # Fit model to training data
 model.fit(X_train, Y_train, batch_size=32, epochs=10, verbose=1)
 
 # Evaluate the model on test data
 #score = model.evaluate(X_test, Y_test, verbose=0)
 #print score
-model.evaluate(x_test, y_test, verbose=0)
+score = model.evaluate(X_test, Y_test, verbose=0)
 print "test loss:", score[0]
 print "test accuracy:",  score[1]
 
@@ -83,21 +84,5 @@ print "test accuracy:",  score[1]
 
 tbCallBack = TensorBoard(log_dir='./log', histogram_freq=1, write_graph=True, write_grads=True, batch_size=32, write_images=True)
 # We can use a call back to look into the internal state of the model during training
-model.fit(X_train, Y_train, batch_size=32, epochs=epochs, verbose=1, validation_data=(X_test, Y_test), callbacks=[tbCallBack])
-
-
-
-
-
-
-
-
-
-
-# Using InceptionV3
-
-#model = keras.applications.inception_v3.InceptionV3(include_top=True, weights='imagenet', input_tensor=None, input_shape=None, pooling=None, classes=1000)
-
-#model.add(Dense(64))
-#model.add(Activation('tanh'))
+model.fit(X_train, Y_train, batch_size=32, epochs=10, verbose=1, validation_data=(X_test, Y_test), callbacks=[tbCallBack])
 
