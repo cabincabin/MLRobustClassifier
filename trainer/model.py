@@ -20,6 +20,7 @@ def GCPPath(UseGCP):
         imageOutputScaled = "gs://wpiopenimageskaggle/Imagefiles256x256/"
         imageOutputEdge = "gs://wpiopenimageskaggle/ImagefilesEdge256x256/"
         pointsOutput = "gs://wpiopenimageskaggle/imageIds/PointAnnotationsSet256x256.txt"
+    getImageGCPPaths()
 
 
 def read_file_JSON(filename):
@@ -34,9 +35,9 @@ def read_file_JSON(filename):
 
 def _open_file_read_binary(uri):
     try:
-        return file_io.FileIO(uri, mode='rb')
-    except errors.InvalidArgumentError:
         return file_io.FileIO(uri, mode='r')
+    except:
+        return file_io.FileIO(uri, mode='rb')
 
 
 def getImageGCPPaths():
@@ -51,6 +52,8 @@ def getImageGCPPaths():
 
         size = 256,256
         crop = 0,0,256,256
+        if index%100 == 0:
+        	print(index)
         try:
 
             with _open_file_read_binary(uriInp) as f:
@@ -58,9 +61,9 @@ def getImageGCPPaths():
                 img = Image.open(io.BytesIO(image_bytes)).convert('L')
                 img = img.resize(size, Image.ANTIALIAS)
                 imgWEdges = img.copy().filter(ImageFilter.FIND_EDGES)
-                with file_io.FileIO(uricrop, mode = 'wb') as fThumb:
+                with file_io.FileIO(uricrop, mode = 'w') as fThumb:
                     img.save(fThumb, "JPEG")
-                with file_io.FileIO(uricropEdge, mode = 'wb') as fEdge:
+                with file_io.FileIO(uricropEdge, mode = 'w') as fEdge:
                     imgWEdges.save(fEdge, "JPEG")
 
         except:
