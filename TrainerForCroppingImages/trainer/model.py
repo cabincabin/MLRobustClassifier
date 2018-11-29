@@ -8,11 +8,9 @@ from PIL import Image
 from PIL import ImageFilter
 
 imageInputPath = "ImageFiles/"
-imageScaled = "Imagefiles256x256/"
-
+imageOutputScaled = "Imagefiles256x256/"
 imageOutputEdge = "ImagefilesEdge256x256/"
 pointsOutput = "PointAnnotationsSet256x256.txt"
-BUCKET='wpiopenimageskaggle'
 
 def GCPPath(UseGCP):
     if UseGCP == True:
