@@ -15,7 +15,7 @@ from PIL import ImageFilter
 def USEGCP(UseGCP):
     if UseGCP == True:
         args = parser.parse_args()
-        subprocess.call(["gsutil", "cp", args.points_path, "PointAnnotationsSet.txt"])
+        subprocess.call(["gsutil", "cp", args.points_path, "PointAnnotationsSet256x256.txt"])
         global imageInputPath
         imageInputPath = args.images_input_path
 
@@ -89,7 +89,7 @@ def CreateBatchOfImages(batchSize, labelDict):
 
 #for local testing
 imageInputPath = "Imagefiles256x256/"
-imagePoint = "PointAnnotationsSet.txt"
+imagePoint = "PointAnnotationsSet256x256.txt"
 
 #this will need to be  moved to 'task.py' when all code is done, in order to deploy to GCP ML engine
 parser = argparse.ArgumentParser()
