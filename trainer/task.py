@@ -114,7 +114,7 @@ if __name__== "__main__":
     idsToRemoveFromEachBatch = IdsFromLabels.copy()
     # Creates a batch in ImageLabelDict in the format [ImageArr, ID]
     ImageLabelDict, idsToRemoveFromEachBatch, SuccessNum = CreateBatchOfImages(10, idsToRemoveFromEachBatch)
-    model.main()
+    model.main(ImageLabelDict, idsToRemoveFromEachBatch, SuccessNum)
 
 
 
