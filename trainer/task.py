@@ -92,13 +92,14 @@ imageInputPath = "Imagefiles256x256/"
 imagePoint = "PointAnnotationsSet256x256.txt"
 
 #this will need to be  moved to 'task.py' when all code is done, in order to deploy to GCP ML engine
+# Shoop testing
 parser = argparse.ArgumentParser()
-parser.add_argument('--points_path', dest='points_path', required=False)
+parser.add_argument('--points-path', dest='points_path', required=False)
 #FOR CROPPED BLACK AND WHITE IMAGES USE:
     #---->gs://wpiopenimageskaggle/Imagefiles256x256/
 #FOR CROPPED EDGE IMAGES USE:
     #---->gs://wpiopenimageskaggle/ImagefilesEdge256x256/
-parser.add_argument('--images_input_path', dest='images_input_path', required=False)
+parser.add_argument('--images-input-path', dest='images_input_path', required=False)
 
 #TO DEPLOY IN GCP ML ENGINE, MUST DELETE ALL LOCAL IMAGE FOLDERS AND 'PointAnnotationsSet"
 #TO RUN
@@ -107,7 +108,7 @@ parser.add_argument('--images_input_path', dest='images_input_path', required=Fa
 #2. >>>JOB_NAME=<GIVEITANAMEANDVERSION>
 #3. >>> gcloud ml-engine jobs submit training $JOB_NAME --job-dir gs://mlengine_example_bucket --runtime-version 1.8 --module-name trainer.task --package-path trainer/ --region $REGION
 if __name__== "__main__":
-    USEGCP(False) #SET TO TRUE WHEN USING GCP
+    USEGCP(True) #SET TO TRUE WHEN USING GCP
     points = read_file_JSON(imagePoint) #create points from JSON: IDS are key, contains label/confidince/crop.
     IdsFromLabels = CreateDictLabels(points) #creates a dictionary such that the key is a label, returns all IDS of that label
     #the batch function removes ids from the dictionary, so keep an eye on that.
@@ -115,10 +116,4 @@ if __name__== "__main__":
     # Creates a batch in ImageLabelDict in the format [ImageArr, ID]
     ImageLabelDict, idsToRemoveFromEachBatch, SuccessNum = CreateBatchOfImages(10, idsToRemoveFromEachBatch)
     model.main(ImageLabelDict, idsToRemoveFromEachBatch, SuccessNum)
-
-
-
-
-
-
 

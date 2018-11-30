@@ -8,7 +8,6 @@ from PIL import Image
 import numpy as np
 import argparse
 from PIL import ImageFilter
-from matplotlib import pyplot as plt
 import numpy as np
 import keras
 from keras.models import Sequential
@@ -17,10 +16,6 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.utils import np_utils
 from keras.datasets import mnist
 from keras.callbacks import TensorBoard
-from matplotlib import pyplot as plt
-import matplotlib.image as mpimg
-
-
 
 def main(ImageLabelDict, idsToRemoveFromEachBatch, SuccessNum):
     ###
@@ -130,6 +125,3 @@ def main(ImageLabelDict, idsToRemoveFromEachBatch, SuccessNum):
 
     # We can use a call back to look into the internal state of the model during training
     model.fit(X_train, Y_train, batch_size=32, epochs=10, verbose=1, validation_data=(X_test, Y_test), callbacks=[tbCallBack])
-
-
-
