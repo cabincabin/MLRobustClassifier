@@ -28,9 +28,9 @@ def main(ImageLabelDict, idsToRemoveFromEachBatch, SuccessNum):
     for val in keys:
         imgs=ImageLabelDict.get(val)
         for img in imgs:
-            print(img)
+            #print(img)
             vec=img[0]
-            print(vec)
+            #print(vec)
             data.append(vec)
             labels.append(label)
         label+=1
@@ -41,14 +41,13 @@ def main(ImageLabelDict, idsToRemoveFromEachBatch, SuccessNum):
     ########
         
     total=len(data)
-    train_size=round(total*0.75)
+    train_size=round(total*0.75) # must be int type for np.random.choice
     test_size=total-train_size
     import random
     random.seed(4)
   
-    train_ind=np.random.choice(len(labels),train_size,replace=False)
+    train_ind=np.random.choice(len(labels), int(train_size),replace=False)
     test_ind=np.setdiff1d(list(range(0, total)),train_ind)
-
 
     labels_test=np.array(labels)
     data_test=np.array(data)

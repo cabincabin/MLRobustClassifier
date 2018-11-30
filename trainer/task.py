@@ -15,9 +15,12 @@ from PIL import ImageFilter
 def USEGCP(UseGCP):
     if UseGCP == True:
         args = parser.parse_args()
+        print(args.points_path)
+        print(args.images_input_path)
         subprocess.call(["gsutil", "cp", args.points_path, "PointAnnotationsSet256x256.txt"])
-        global imageInputPath
-        imageInputPath = args.images_input_path
+        global imageInputPath, imagePoint
+        imagePoint = "PointAnnotationsSet256x256.txt"
+        imageInputPath = "gs://wpiopenimageskaggle/Imagefiles256x256/"
 
 #Dumps a file to JSON format, used to get points from 'PointAnnotationsSet.txt'
 def read_file_JSON(filename):
@@ -88,8 +91,8 @@ def CreateBatchOfImages(batchSize, labelDict):
     return ImageLabelDict, labelDict, SuccessNum
 
 #for local testing
-imageInputPath = "Imagefiles256x256/"
-imagePoint = "PointAnnotationsSet256x256.txt"
+#imageInputPath = "Imagefiles256x256/"
+#imagePoint = "PointAnnotationsSet256x256.txt"
 
 #this will need to be  moved to 'task.py' when all code is done, in order to deploy to GCP ML engine
 # Shoop testing
