@@ -1,124 +1,158 @@
 
-import trainer.model as model
-import tensorflow as tf
-import json
-import io
-import os
-import subprocess
-from tensorflow.python.lib.io import file_io
-from PIL import Image
-import numpy as np
-import argparse
-from PIL import ImageFilter
-
-##Use TRUE to deploy to GCP ML engine
-def USEGCP(UseGCP):
-    if UseGCP == True:
-        args = parser.parse_args()
-        subprocess.call(["gsutil", "cp", args.points_path, "PointAnnotationsSet256x256.txt"])
-        global imageInputPath
-        imageInputPath = args.images_input_path
-
-#Dumps a file to JSON format, used to get points from 'PointAnnotationsSet.txt'
-def read_file_JSON(filename):
-
-    with open(filename, 'r') as file:
-        # self.response.write(cloudstorage_file.read())
-        annotString = file.read()
-        file.close()
-
-    annotations = json.loads(annotString)
-    return annotations
-
-def _open_file_read_binary(uri):
-    try:
-        return file_io.FileIO(uri, mode='r')
-    except:
-        return file_io.FileIO(uri, mode='rb')
-
-#given a set of JSON, in form
-#[{"id": "9eb39d618fd92994", "annotations": [{"confidence": "1", "label": "/m/01g317", "y1": "0.807014", "y0": "0.218368", "x0": "0.072245", "x1": "0.729939", "id": "9eb39d618fd92994"}]}
-#create a dictionary: labels are the key, returns a list of all of the ids in that label
-def CreateDictLabels(Points):
-    dictOfLabels = {}
-    for point in Points:
-        labelkey = point['annotations'][0]['label'] #get the label
-        if labelkey not in dictOfLabels:
-            dictOfLabels.setdefault(labelkey, [])
-        dictOfLabels[labelkey].append(point['id'])
-    return dictOfLabels
-
-#Given a label dictionary and a batch size, create and return:
-#A label dictionary containing a set of tuples [[imageArr,id],[imageArr,id]...]
-#the ORIGINAL DICTIONARY with the chosen images removed
-#The max number of images that were added per label,
-    #---->this is for if a label has less images than another, so that the user
-    #---->will not train more images of one label than another, which would cause weighting issues.
-    #---->IE label1: 5 images, label2: 10 images, label3: 7 images.
-    #---->5 images of each label would be added to the output dictionary and the number 5 would be returned
-def CreateBatchOfImages(batchSize, labelDict):
-    global imageInputPath
-    ImageLabelDict = {}
-    SuccessNum = 0
-    for index in range(batchSize):
-        for labelkey in labelDict.keys():
-            if labelkey not in ImageLabelDict:
-                ImageLabelDict.setdefault(labelkey, [])
-
-            #force add one image, keep trying until one has been added, protects against corrupted images
-            while len(labelDict[labelkey]) != 0:
-                try:
-                    imageId = labelDict[labelkey].pop(0)
-                    uriInp = imageInputPath + imageId + ".jpg"
-
-                    with _open_file_read_binary(uriInp) as f:
-                        image_bytes = f.read()
-                        img = Image.open(io.BytesIO(image_bytes))
-                        imgArr = np.array(img)
-                except: #find image exception error for better style
-                    continue
-                else:
-                    ImageLabelDict[labelkey].append([imgArr, imageId])
-                    break
-        #make sure all have nonzero number of images left
-        for labelkey in labelDict.keys(): #This could be expensive, may want to find better way
-            if len(labelDict[labelkey])==0:
-                return ImageLabelDict, labelDict, SuccessNum #sucsess num could have offby1error keep an eye out
-        SuccessNum += 1
-    return ImageLabelDict, labelDict, SuccessNum
-
-#for local testing
-imageInputPath = "Imagefiles256x256/"
-imagePoint = "PointAnnotationsSet256x256.txt"
-
-#this will need to be  moved to 'task.py' when all code is done, in order to deploy to GCP ML engine
-parser = argparse.ArgumentParser()
-parser.add_argument('--points_path', dest='points_path', required=False)
-#FOR CROPPED BLACK AND WHITE IMAGES USE:
-    #---->gs://wpiopenimageskaggle/Imagefiles256x256/
-#FOR CROPPED EDGE IMAGES USE:
-    #---->gs://wpiopenimageskaggle/ImagefilesEdge256x256/
-parser.add_argument('--images_input_path', dest='images_input_path', required=False)
-
 #TO DEPLOY IN GCP ML ENGINE, MUST DELETE ALL LOCAL IMAGE FOLDERS AND 'PointAnnotationsSet"
 #TO RUN
 #IN GOOGLE CLOUD CONSOLE
 #1. >>>REGION=us-central1
 #2. >>>JOB_NAME=<GIVEITANAMEANDVERSION>
 #3. >>> gcloud ml-engine jobs submit training $JOB_NAME --job-dir gs://mlengine_example_bucket --runtime-version 1.8 --module-name trainer.task --package-path trainer/ --region $REGION
-if __name__== "__main__":
-    USEGCP(False) #SET TO TRUE WHEN USING GCP
-    points = read_file_JSON(imagePoint) #create points from JSON: IDS are key, contains label/confidince/crop.
-    IdsFromLabels = CreateDictLabels(points) #creates a dictionary such that the key is a label, returns all IDS of that label
-    #the batch function removes ids from the dictionary, so keep an eye on that.
-    idsToRemoveFromEachBatch = IdsFromLabels.copy()
-    # Creates a batch in ImageLabelDict in the format [ImageArr, ID]
-    ImageLabelDict, idsToRemoveFromEachBatch, SuccessNum = CreateBatchOfImages(10, idsToRemoveFromEachBatch)
-    model.main()
+
+#if __name__== "__main__":
+#    model.USEGCP(False) #USE TRUE WHEN DEPLOYING TO GCP ML ENGINE
+#    model.main()
+
+# the following is Shoop code
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+import argparse
+import logging
+import os
+import sys
+
+import numpy as np
+from . import model
+from . import utils
+
+import tensorflow as tf
+from tensorflow.contrib.training.python.training import hparam
 
 
+def get_args():
+  """Argument parser.
+	Returns:
+	  Dictionary of arguments.
+	"""
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
+    '--job-dir',
+    type=str,
+    required=True,
+    help='GCS location to write checkpoints and export models')
+  parser.add_argument(
+    '--train-file',
+    type=str,
+    required=True,
+    help='Training file local or GCS')
+  parser.add_argument(
+    '--train-labels-file',
+    type=str,
+    required=True,
+    help='Training labels file local or GCS')
+  parser.add_argument(
+    '--test-file',
+    type=str,
+    required=True,
+    help='Test file local or GCS')
+  parser.add_argument(
+    '--test-labels-file',
+    type=str,
+    required=True,
+    help='Test file local or GCS')
+  parser.add_argument(
+    '--num-epochs',
+    type=float,
+    default=5,
+    help='number of times to go through the data, default=5')
+  parser.add_argument(
+    '--batch-size',
+    default=128,
+    type=int,
+    help='number of records to read during each training step, default=128')
+  parser.add_argument(
+    '--learning-rate',
+    default=.01,
+    type=float,
+    help='learning rate for gradient descent, default=.001')
+  parser.add_argument(
+    '--verbosity',
+    choices=['DEBUG', 'ERROR', 'FATAL', 'INFO', 'WARN'],
+    default='INFO')
+  parser.add_argument(
+    '--points_path', 
+    dest='points_path', 
+    required=False)
+#FOR CROPPED BLACK AND WHITE IMAGES USE:
+    #---->gs://wpiopenimageskaggle/Imagefiles256x256/
+#FOR CROPPED EDGE IMAGES USE:
+    #---->gs://wpiopenimageskaggle/ImagefilesEdge256x256/
+  parser.add_argument(
+    '--images_input_path',
+    dest='images_input_path',
+    required=False)
+
+  return parser.parse_args()
 
 
+def train_and_evaluate(hparams):
+  """Helper function: Trains and evaluates model.
+  Args:
+    hparams: (dict) Command line parameters passed from task.py
+  """
+  # Loads data.
+  (train_images, train_labels), (test_images, test_labels) = \
+      utils.prepare_data(train_file=hparams.train_file,
+                         train_labels_file=hparams.train_labels_file,
+                         test_file=hparams.test_file,
+                         test_labels_file=hparams.test_labels_file)
 
+  # Scale values to a range of 0 to 1.
+  train_images = train_images / 255.0
+  test_images = test_images / 255.0
 
+  # Define training steps.
+  train_steps = hparams.num_epochs * len(
+      train_images) / hparams.batch_size
+  # Create TrainSpec.
+  train_labels = np.asarray(train_labels).astype('int').reshape((-1, 1))
+  train_spec = tf.estimator.TrainSpec(
+      input_fn=lambda: model.input_fn(
+          train_images,
+          train_labels,
+          hparams.batch_size,
+          mode=tf.estimator.ModeKeys.TRAIN),
+      max_steps=train_steps)
 
+  # Create EvalSpec.
+  exporter = tf.estimator.LatestExporter('exporter', model.serving_input_fn)
+  # Shape numpy array.
+  test_labels = np.asarray(test_labels).astype('int').reshape((-1, 1))
+  eval_spec = tf.estimator.EvalSpec(
+      input_fn=lambda: model.input_fn(
+          test_images,
+          test_labels,
+          hparams.batch_size,
+          mode=tf.estimator.ModeKeys.EVAL),
+      steps=None,
+      exporters=exporter,
+      start_delay_secs=10,
+      throttle_secs=10)
+
+  # Define running config.
+  run_config = tf.estimator.RunConfig(save_checkpoints_steps=500)
+  # Create estimator.
+  estimator = model.keras_estimator(
+    model_dir=hparams.job_dir,
+    config=run_config,
+    learning_rate=hparams.learning_rate)
+  # Start training
+  tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
+
+if __name__ == '__main__':
+
+  args = get_args()
+  tf.logging.set_verbosity(args.verbosity)
+
+  hparams = hparam.HParams(**args.__dict__)
+  train_and_evaluate(hparams)
