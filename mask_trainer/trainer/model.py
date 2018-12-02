@@ -68,13 +68,20 @@ def getImageGCPPaths():
                 y0 = point['annotation'][0]['y1']
                 y1 = point['annotation'][0]['y1']
                 print x0, x1, y0, y1
-                
+
+                sum = 0
+                for j in range(257):
+                    for i in range(257):
+                        sum += img[j][i]
+                average = sum/(256*256)
+
                 for j in range(257):
                     for i in range(257):
                         if (i < x0 or i > x1) and (j < y0 or j > y1):
-                            img[j][i] = 255
-
-                
+                            if average >= 127:
+                                img[j][i] = 255
+                            else:
+                                img[j][i] = 0
 
                 img = img.resize(size, Image.ANTIALIAS)
                 imgWEdges = img.copy().filter(ImageFilter.FIND_EDGES)
