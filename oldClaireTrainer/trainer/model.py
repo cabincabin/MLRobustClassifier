@@ -37,10 +37,11 @@ def main(ImageLabelDict, idDict, SuccessNum, outputModelInfoPath):
         for img in imgs:
             #print(img)
             vec=img[0]
-            ids=img[1]
+            id=img[1]
             #print(vec)
             data.append(vec)
             labels.append(label)
+            ids.append(id)
         label+=1
         
     ########
@@ -49,6 +50,7 @@ def main(ImageLabelDict, idDict, SuccessNum, outputModelInfoPath):
     ########
         
     total=len(data)
+    print(total)
     train_size=round(total*0.75) # must be int type for np.random.choice
     test_size=total-train_size
     import random
@@ -59,16 +61,16 @@ def main(ImageLabelDict, idDict, SuccessNum, outputModelInfoPath):
 
     labels_test=np.array(labels)
     data_test=np.array(data)
-    ids_test=np.array(ids)
-    labelNames_test=np.array(labelNames)
+    #labelNames_test=np.array(labelNames)
     
     X_train=data_test[np.where(train_ind)]
     X_test=data_test[np.where(test_ind)]
-    ids_test=ids_test[np.where(test_ind)]
+    X_testcp = X_test.copy()
+    ids_test=ids#data_test[np.where(test_ind)]
 
     Y_train=labels_test[np.where(train_ind)]
     Y_test=labels_test[np.where(test_ind)]
-    labelNames_test=[np.where(test_ind)]
+    #labelNames_test=labels_test[np.where(test_ind)]
     
     ############
     ###  Specify image size and format data to input into model
@@ -80,7 +82,7 @@ def main(ImageLabelDict, idDict, SuccessNum, outputModelInfoPath):
     # We reshape the input data to have a depth of 1 (grey scale)
     if keras.backend.image_data_format() == 'channels_first':
         X_train = X_train.reshape(X_train.shape[0], 1, img_len, img_width)
-        X_test = X_test.reshape(X_test.shape[0], 1, img_len, img_width)
+        X_test = X_test.reshape(X_test.shape, 1, img_len, img_width)
         input_shape = (1, img_len, img_width)
     else:
         X_train = X_train.reshape(X_train.shape[0], img_len, img_width, 1)
@@ -129,35 +131,49 @@ def main(ImageLabelDict, idDict, SuccessNum, outputModelInfoPath):
 
     # Evaluate the model on test data
     score = model.evaluate(X_test, Y_test, verbose=0)
-    generalInfo = model.summary() + '\n'
-    generalInfo += "test size:" + len(X_test)
-    generalInfo += "test loss:", score[0] + '\n'
-    generalInfo += "test accuracy:",  score[1]
+    #generalInfo = model.summary() + '\n'
+    
+    generalInfo = "test size:" + str(len(X_test)) + '\n'
+    try:
+        generalInfo += "test loss:" + str(score[0]) + '\n'
+        generalInfo += "test accuracy:" + str(score[1])
+    except:
+        print("Failed Score")
     generalInfoPath = outputModelInfoPath + "GeneralModelInfo.txt"
+    print("HERE")
     with file_io.FileIO(generalInfoPath, mode='w') as infoFile:
         infoFile.write(generalInfo)
 
     IdLabelPredictions = []
 #FORMAT IS A DICT WITH: id, predictions, indicies corr to which label is correct
-    for index in range(len(X_test)):
+    for index in range(len(X_testcp)):
         predictInfoDict = {}
-        predictInfoDict.setdefault('id', ids_test[index])
-        predictInfoDict.setdefault('PredictLabels', model.predict(X_test[index]))
-        IdlabelNames = idDict[ids_test[index]]
-        if (type(IdlabelNames) == type("oh My My My")):
-            predictInfoDict.setdefault('correctIndicies', [labelNames.index(IdlabelNames)], X_test)
-        else:
-            labelIndecies = []
-            for label in IdlabelNames:
-                labelIndecies.append(labelNames.index(label))
+        predictInfoDict.setdefault('id', ids_test[test_ind[index]])
+        imgarr = np.array([data[test_ind[index]]])
+        predictInfoDict.setdefault('PredictLabels', (model.predict(imgarr.reshape(1, img_len, img_width, 1))).tolist())
+        #print(ids_test[index])
+        #print(test_ind[index])
+        #print(ids_test[test_ind[index]])
+        IdlabelNames = idDict[ids_test[test_ind[index]]]
+        #if (type(IdlabelNames) == type("oh My My My")):
+        predictInfoDict.setdefault('correctIndicies', [labelNames.index(IdlabelNames)])
+        #else:
+            #labelIndecies = []
+            #for label in IdlabelNames:
+                #labelIndecies.append(labelNames.index(label))
 
         IdLabelPredictions.append(predictInfoDict)
+        print("her2")
     IdlabelPredictPath = outputModelInfoPath + "IdlabelPredict.txt"
     with file_io.FileIO(IdlabelPredictPath, mode='w') as infoFile:
-        infoFile.write(generalInfo)
+        infoFile.write(json.dumps(IdLabelPredictions))
+        
+    IdlabelPredictPath = outputModelInfoPath + "labelDict.txt"
+    with file_io.FileIO(IdlabelPredictPath, mode='w') as infoFile:
+        infoFile.write(json.dumps(labelNames))
 
-    print("test loss:", score[0])
-    print("test accuracy:",  score[1])
+#    print("test loss:", score[0])
+#    print("test accuracy:",  score[1])
     # score[0] gives you the test loss and score[1] gives you the accuracy
 
     tbCallBack = TensorBoard(log_dir='./log', histogram_freq=1, write_graph=True, write_grads=True, batch_size=32, write_images=True)
