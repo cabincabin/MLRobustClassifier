@@ -1,3 +1,5 @@
+import csv
+
 import tensorflow as tf
 import json
 import io
@@ -17,19 +19,25 @@ from keras.utils import np_utils
 from keras.datasets import mnist
 from keras.callbacks import TensorBoard
 
-def main(ImageLabelDict, idsToRemoveFromEachBatch, SuccessNum):
+def main(ImageLabelDict, idDict, SuccessNum, outputModelInfoPath):
     ###
     ## Extract training and testing data from dict
     ####
     keys=list(ImageLabelDict.keys())
     data=[]
+    labelNames=[]
     labels=[]
     label=0
+    ids = []
+    #unpairs the time taken to pair images.
+    #todo: REWRITE THIS SO WE KEEP THE ID'S PAIRED
     for val in keys:
+        labelNames.append(val)
         imgs=ImageLabelDict.get(val)
         for img in imgs:
             #print(img)
             vec=img[0]
+            ids=img[1]
             #print(vec)
             data.append(vec)
             labels.append(label)
@@ -51,11 +59,16 @@ def main(ImageLabelDict, idsToRemoveFromEachBatch, SuccessNum):
 
     labels_test=np.array(labels)
     data_test=np.array(data)
+    ids_test=np.array(ids)
+    labelNames_test=np.array(labelNames)
     
     X_train=data_test[np.where(train_ind)]
     X_test=data_test[np.where(test_ind)]
+    ids_test=ids_test[np.where(test_ind)]
+
     Y_train=labels_test[np.where(train_ind)]
     Y_test=labels_test[np.where(test_ind)]
+    labelNames_test=[np.where(test_ind)]
     
     ############
     ###  Specify image size and format data to input into model
@@ -116,6 +129,33 @@ def main(ImageLabelDict, idsToRemoveFromEachBatch, SuccessNum):
 
     # Evaluate the model on test data
     score = model.evaluate(X_test, Y_test, verbose=0)
+    generalInfo = model.summary() + '\n'
+    generalInfo += "test size:" + len(X_test)
+    generalInfo += "test loss:", score[0] + '\n'
+    generalInfo += "test accuracy:",  score[1]
+    generalInfoPath = outputModelInfoPath + "GeneralModelInfo.txt"
+    with file_io.FileIO(generalInfoPath, mode='w') as infoFile:
+        infoFile.write(generalInfo)
+
+    IdLabelPredictions = []
+#FORMAT IS A DICT WITH: id, predictions, indicies corr to which label is correct
+    for index in range(len(X_test)):
+        predictInfoDict = {}
+        predictInfoDict.setdefault('id', ids_test[index])
+        predictInfoDict.setdefault('PredictLabels', model.predict(X_test[index]))
+        IdlabelNames = idDict[ids_test[index]]
+        if (type(IdlabelNames) == type("oh My My My")):
+            predictInfoDict.setdefault('correctIndicies', [labelNames.index(IdlabelNames)], X_test)
+        else:
+            labelIndecies = []
+            for label in IdlabelNames:
+                labelIndecies.append(labelNames.index(label))
+
+        IdLabelPredictions.append(predictInfoDict)
+    IdlabelPredictPath = outputModelInfoPath + "IdlabelPredict.txt"
+    with file_io.FileIO(IdlabelPredictPath, mode='w') as infoFile:
+        infoFile.write(generalInfo)
+
     print("test loss:", score[0])
     print("test accuracy:",  score[1])
     # score[0] gives you the test loss and score[1] gives you the accuracy

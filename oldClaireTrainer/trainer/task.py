@@ -18,9 +18,10 @@ def USEGCP(UseGCP):
         print(args.points_path)
         print(args.images_input_path)
         subprocess.call(["gsutil", "cp", args.points_path, "PointAnnotationsSet256x256.txt"])
-        global imageInputPath, imagePoint
+        global imageInputPath, imagePoint, outputPath
         imagePoint = "PointAnnotationsSet256x256.txt"
-        imageInputPath = "gs://wpiopenimageskaggle/Imagefiles256x256/"
+        imageInputPath = args.images_input_path#"gs://wpiopenimageskaggle/Imagefiles256x256/"
+        outputPath = args.images_output_path
 
 #Dumps a file to JSON format, used to get points from 'PointAnnotationsSet.txt'
 def read_file_JSON(filename):
@@ -90,10 +91,16 @@ def CreateBatchOfImages(batchSize, labelDict):
         SuccessNum += 1
     return ImageLabelDict, labelDict, SuccessNum
 
+def getIDLabelDict(points):
+    idDict = {}
+    for point in points:
+        idDict.setdefault(point['id'], point['annotations'][0]['label'])
+    return idDict
+
 #for local testing
 #imageInputPath = "Imagefiles256x256/"
 #imagePoint = "PointAnnotationsSet256x256.txt"
-
+#outputPath
 #this will need to be  moved to 'task.py' when all code is done, in order to deploy to GCP ML engine
 # Shoop testing
 parser = argparse.ArgumentParser()
@@ -103,6 +110,7 @@ parser.add_argument('--points-path', dest='points_path', required=False)
 #FOR CROPPED EDGE IMAGES USE:
     #---->gs://wpiopenimageskaggle/ImagefilesEdge256x256/
 parser.add_argument('--images-input-path', dest='images_input_path', required=False)
+parser.add_argument('--images-output-path', dest='images_output_path', required=False)
 
 #TO DEPLOY IN GCP ML ENGINE, MUST DELETE ALL LOCAL IMAGE FOLDERS AND 'PointAnnotationsSet"
 #TO RUN
@@ -118,5 +126,8 @@ if __name__== "__main__":
     idsToRemoveFromEachBatch = IdsFromLabels.copy()
     # Creates a batch in ImageLabelDict in the format [ImageArr, ID]
     ImageLabelDict, idsToRemoveFromEachBatch, SuccessNum = CreateBatchOfImages(10, idsToRemoveFromEachBatch)
-    model.main(ImageLabelDict, idsToRemoveFromEachBatch, SuccessNum)
+    #ImageLabel = {1: [[0],'9eb39d618fd92994'], 2: [[0],'025a6cccec41134'], 3: [[0],'002200be72145198'], 4:[[0],'003d4acb635f05b7']}
+
+    #model.main(ImageLabel, getIDLabelDict(points), SuccessNum, "")
+    model.main(ImageLabelDict, getIDLabelDict(points), SuccessNum, outputPath)
 
