@@ -1,0 +1,4 @@
+apache-beam[gcp]==2.6.0
+pillow==4.0.0
+tensorflow==1.12
+numpy==1.15.4
