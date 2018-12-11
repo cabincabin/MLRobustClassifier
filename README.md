@@ -13,7 +13,9 @@
 - Saina Rezvani (srezvani@wpi.edu, @SainaRez)
 
 ### Introduction
+<p>
 The effectiveness of modern machine learning image classifiers is heavily dependent on the degree to which the corpus is representative of the images being classified. When corpuses are not inclusive, models produce high rates of misclassification of images with low representation. Previous research completed on in this area include an exploration of gender<sup>1</sup> and geodiversity related challenges. 
+</p>
 
 This team project focused on the development of robust image classification machine learning models to handle pictures from geographically diverse regions (primarily non-Americas and non-European). The inspiration for this project came from a Kaggle competition called the [Inclusive Images Challenge]( https://www.kaggle.com/c/inclusive-images-challenge). This is where information on the training and test image datasets can be found as well.
 
