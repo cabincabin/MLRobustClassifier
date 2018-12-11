@@ -3,7 +3,7 @@
 ## Development of Robust Image Classifiers for Geo-diverse Distributions
 
 <p align="center">
-	<img src="/img/inclusive_images_header.png" />
+	<img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/inclusive_images_header.png"/>
 </p>
 
 ### The Team
