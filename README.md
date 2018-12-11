@@ -2,7 +2,9 @@
 
 ## Development of Robust Image Classifiers for Geo-diverse Distributions
 
-![Inclusive Images Challenge](./img/inclusive_images_header.png)
+<p align="center">
+	<img src="/img/inclusive_images_header.png" />
+</p>
 
 ### The Team
 - Alexander Shoop (akshoop@wpi.edu, @akshoop)
