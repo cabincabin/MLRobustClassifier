@@ -76,5 +76,9 @@ In the next step we fit the model to our training data with the batch size of 32
 4. Follow the Readme in the folder MLEngineTrainers
 
 ### References
+##### Academic Papers:
 1. Zhao, J., Wang, T., Yatskar, M., Ordonez, V., & Chang, K. W. (2017). Men also like shopping: Reducing gender bias amplification using corpus-level constraints. arXiv preprint arXiv:1707.09457.
 2. Shankar, S., Halpern, Y., Breck, E., Atwood, J., Wilson, J., & Sculley, D. (2017). No Classification without Representation: Assessing Geodiversity Issues in Open Data Sets for the Developing World. arXiv preprint arXiv:1711.08536.
+##### Other Sources:
+https://machinelearningmastery.com/tutorial-first-neural-network-python-keras/
+https://elitedatascience.com/keras-tutorial-deep-learning-in-python
