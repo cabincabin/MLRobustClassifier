@@ -20,11 +20,12 @@ This team project focused on the development of robust image classification mach
 The team developed a traditional Convolutional Neural Network (CNN) using Tensorflow and Keras. We also had to learn and utilize the Google Cloud Platform (GCP) services; the GCP services used were Cloud Storage and Model Training due to the enormous size of the Open Images dataset. The team hypothesized that emphasizing the structure (aka. features such as edges) would allow for better generalization. The results of this project work suggest that a method that augments the dataset to support generalization is likely a better approach.
 
 ### The Data
-The data used to complete this research project is part of the [Open Images dataset](https://storage.googleapis.com/openimages/web/index.html). As this is a very large dataset totaling over 500GB,for the classifyable data, our team had to use Google Cloud Platform with TensorFlow when implementing the models. Due to the technical hurdles and project scope, we implemented just a portion of the image dataset. The data was split into training and testing data sets for the dataset called "Train/Test." The real-world test dataset was gathered from the [Kaggle competition page](https://www.kaggle.com/c/inclusive-images-challenge/data), which we combined with our training set to create the "Train/Tune" dataset.
+The data used to complete this research project is part of the [Open Images dataset](https://storage.googleapis.com/openimages/web/index.html). As this is a very large dataset totaling over 500GB,for the classifyable data, our team had to use Google Cloud Platform with TensorFlow when implementing the models. We had 3 sets from this data, which we worked with: One of 200,000+ images and all 500 trainable labels, one of 37000 images, made from 8 of the most common labels, and one of 3600 images, and the same 8 labels, the final of which was used for quick tests. "Train/Test" split the data into training and testing data. "Train/Tune" was tested using the real-world test dataset, 1000 images across all 500 labels, gathered from the [Kaggle competition page](https://www.kaggle.com/c/inclusive-images-challenge/data).
 
+Each set of images was reduced down to 256x256, then was stored as black and white and edge images, as seen below. 
 <p align="center">
-<img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/edge1.jpg"/>
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/full1.jpg"/>
+<img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/edge1.jpg"/>
 </p>
 
 ### Results
@@ -32,7 +33,6 @@ The data used to complete this research project is part of the [Open Images data
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/Training_Loss_ Full_Image.png" width="400" height="370"/>
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/Training_Loss_ Edge_Image.png" width="400" height="370"/>
 </p>
-
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/train_test_full.png"/>
