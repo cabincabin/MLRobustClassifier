@@ -53,8 +53,8 @@ In the next step we fit the model to our training data with 10 epochs to train i
 ### Results
 For the two main training sessions -- black and white images, and edge images -- the following loss graphs were made. 
 <p align="center">
-<img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/Training_Loss_ Full_Image.png" width="400" height="370"/>
-<img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/Training_Loss_ Edge_Image.png" width="400" height="370"/>
+<img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/Training_Loss_ Full_Image.png" width="450" height="320"/>
+<img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/Training_Loss_ Edge_Image.png" width="450" height="320"/>
 </p>
 These graphs are plotted from the instantanious loss calculated by KERAS, sampled every 500 images. Each batch per epoch used for training was a bootstrapped sample of 10,000 images from the dataset. Each "Step" in the loss graph corrisponds to the beginning of one of these batches. 
 
