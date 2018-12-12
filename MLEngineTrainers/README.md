@@ -27,19 +27,24 @@ In trainer/model.py, if you created a custom number of labels, change line 134
      
 to have the number of labels specified in the custom labels
 
-in trainer/task.py
+in trainer/task.pyc line 142, change the output line to the output path to your chosen test output path. This is where the results of testing will end up.  
 
+     model.main(ImageLabelDict, getIDLabelDict(points), SuccessNum, "gs://mlclassifiertuning/imageIds/edgeResultsLabel/")
+     
+goes to
+
+     model.main(ImageLabelDict, getIDLabelDict(points), SuccessNum, "gs://<BUCKETNAME>/<PATHTOTESTRESULTS>/")
 
 ### Configuration Variables
 Run the following shell script within the Cloud Shell:
 
 ```shell
-BUCKET_NAME=mlengine_example_bucket
+BUCKET_NAME=<METADATABUCKET>
 REGION=us-central1
-JOB_NAME=claire_job_1
+JOB_NAME=<CHOOSE_JOB_NAME>
 OUTPUT_PATH=gs://$BUCKET_NAME
-POINTS_PATH=gs://wpiopenimageskaggle/imageIds/PointAnnotationsSet256x256.txt
-IMAGES_INPUT=gs://wpiopenimageskaggle/Imagefiles256x256/
+POINTS_PATH=gs://<BUCKET>/<PATHTO>/PointAnnotationsSet256x256.txt
+IMAGES_INPUT=gs://<BUCKET>/<PATHTOFEATUREENGINEEREDIMAGES>/
 ```
 
 ### Run a training job in the cloud
@@ -58,7 +63,3 @@ gcloud ml-engine jobs submit training $JOB_NAME \
 ```
 
 NOTE: If you want to make use of the GPU computing power in the Google Cloud, then you would modify `config.yaml` and have an argument called `--config config.yaml` before the `--region $REGION` argument. WARNING, GPU power is EXPENSIVE, make sure you have enough GCP Credits/can pay out of pocket. More details on config.yaml can be found here: https://cloud.google.com/ml-engine/docs/tensorflow/machine-types
-
-## Steps to run TrainerTestAndSaveKaggleTune
-
-(similar to above, right?)
