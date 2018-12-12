@@ -64,11 +64,11 @@ def getImageGCPPaths():
                 img = img.resize((4*256,4*256), Image.BICUBIC)
                 img = img.crop(crop)
                 img = img.resize(size, Image.BICUBIC)
-                #imgWEdges = img.copy().filter(ImageFilter.FIND_EDGES)
+                imgWEdges = img.copy().filter(ImageFilter.FIND_EDGES)
                 with file_io.FileIO(uricrop, mode = 'w') as fThumb:
                     img.save(fThumb, "JPEG")
-                #with file_io.FileIO(uricropEdge, mode = 'w') as fEdge:
-                    #imgWEdges.save(fEdge, "JPEG")
+                with file_io.FileIO(uricropEdge, mode = 'w') as fEdge:
+                    imgWEdges.save(fEdge, "JPEG")
 
         except:
             badIndexes.append(index)
