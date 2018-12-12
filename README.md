@@ -22,14 +22,13 @@ The team developed a traditional Convolutional Neural Network (CNN) using Tensor
 ### The Data
 The data used to complete this research project is part of the [Open Images dataset](https://storage.googleapis.com/openimages/web/index.html). As this is a very large dataset totaling over 500GB,for the classifyable data, our team had to use Google Cloud Platform with TensorFlow when implementing the models. We had 3 sets from this data, which we worked with: One of 200,000+ images and all 500 trainable labels, one of 37000 images, made from 8 of the most common labels, and one of 3600 images, and the same 8 labels, the final of which was used for quick tests. "Train/Test" split the data into training and testing data. "Train/Tune" was tested using the real-world test dataset, 1000 images across all 500 labels, gathered from the [Kaggle competition page](https://www.kaggle.com/c/inclusive-images-challenge/data).
 
-Each set of images was reduced down to 256x256, then was stored as black and white and edge images, as seen below. 
+
+### Image Processing
+In our project, we have two sets of images. One set is the grey scale version of images and one set is only object edges in the images. We croped the edge images to the given bounding boxes and resized them to 256 x 256 after. We resized the gray scale images set to 256 x 256 as well. Our motivation for finding the edges was to minimize information to decrease bias and generalize the images. For example for facial features skin tone would not play a part. 
 <p align="center">
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/full1.jpg"/>
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/edge1.jpg"/>
 </p>
-
-### Image Processing
-In our project, we have two sets of images. One set is the grey scale version of images and one set is only object edges in the images. We croped the edge images to the given bounding boxes and resized them to 256 x 256 after. We resized the gray scale images set to 256 x 256 as well. Our motivation for finding the edges was to minimize information to decrease bias and generalize the images. For example for facail features skin tone would not play a part. 
 
 ### Model
 ##### Preprocessing:
@@ -48,13 +47,15 @@ width="700" height="370"/>
 </p>
 Source: https://medium.com/octavian-ai/which-optimizer-and-learning-rate-should-i-use-for-deep-learning-5acb418f9b2
 
-In the next step we fit the model to our training data with the batch size of 32 and 10 epochs to train it for and we evaluaet the training accuracy to see how well the model is fit to the training data. We also use callbacks to understand the internal state of the model while it is traingn on data. 
+In the next step we fit the model to our training data with 10 epochs to train it for and we evaluate the training accuracy to see how well the model is fit to the training data. We also use callbacks to understand the internal state of the model while it is traning on data. 
 
 ### Results
+For the two main training sessions -- black and white images, and edge images -- the following loss graphs were made. 
 <p align="center">
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/Training_Loss_ Full_Image.png" width="400" height="370"/>
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/Training_Loss_ Edge_Image.png" width="400" height="370"/>
 </p>
+These graphs are plotted from the instantanious loss calculated by KERAS, sampled every 500 images. Each batch per epoch used for training was a bootstrapped sample of 10,000 images from the dataset. Each "Step" in the loss graph corrisponds to the beginning of one of these batches. 
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/train_test_full.png"/>
