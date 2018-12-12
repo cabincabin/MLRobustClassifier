@@ -46,6 +46,8 @@ width="700" height="370"/>
 </p>
 Source: https://medium.com/octavian-ai/which-optimizer-and-learning-rate-should-i-use-for-deep-learning-5acb418f9b2
 
+In the next step we fit the model to our training data with the batch size of 32 and 10 epochs to train it for and we evaluaet the training accuracy to see how well the model is fit to the training data. We also use callbacks to understand the internal state of the model while it is traingn on data. 
+
 ### Results
 <p align="center">
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/Training_Loss_ Full_Image.png" width="400" height="370"/>
