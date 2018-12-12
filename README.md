@@ -42,8 +42,9 @@ Finally our last model is Dense which takes in the final number of outputs which
 After adding all the input layers to our model, we compile the model with the sparse_categorical_crossentropy loss function and the adam optimizer. Based on the graph below adam performs better than the rest.
 <p align="center">
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/Optimizers_graph.png" 
-width="400" height="370"/>
+width="700" height="370"/>
 </p>
+Source: https://medium.com/octavian-ai/which-optimizer-and-learning-rate-should-i-use-for-deep-learning-5acb418f9b2
 
 ### Results
 <p align="center">
