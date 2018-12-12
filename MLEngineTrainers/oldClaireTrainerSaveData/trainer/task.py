@@ -1,4 +1,3 @@
-
 import trainer.model as model
 import tensorflow as tf
 import json
@@ -18,11 +17,10 @@ def USEGCP(UseGCP):
         print(args.points_path)
         print(args.images_input_path)
         subprocess.call(["gsutil", "cp", args.points_path, "PointAnnotationsSet256x256.txt"])
-        subprocess.call(["gsutil", "cp", "gs://mlclassifiertuning/imageIds/PointAnnotationsLabel.txt", "PointAnnotationsLabel.txt"])
         global imageInputPath, imagePoint, outputPath
         imagePoint = "PointAnnotationsSet256x256.txt"
         imageInputPath = args.images_input_path#"gs://wpiopenimageskaggle/Imagefiles256x256/"
-        outputPath = "gs://wpiopenimageskaggle/imageIds/"
+        outputPath = args.images_output_path
 
 #Dumps a file to JSON format, used to get points from 'PointAnnotationsSet.txt'
 def read_file_JSON(filename):
@@ -86,9 +84,9 @@ def CreateBatchOfImages(batchSize, labelDict):
                     ImageLabelDict[labelkey].append([imgArr, imageId])
                     break
         #make sure all have nonzero number of images left
-#        for labelkey in labelDict.keys(): #This could be expensive, may want to find better way
-#            if len(labelDict[labelkey])==0:
-#                return ImageLabelDict, labelDict, SuccessNum #sucsess num could have offby1error keep an eye out
+        for labelkey in labelDict.keys(): #This could be expensive, may want to find better way
+            if len(labelDict[labelkey])==0:
+                return ImageLabelDict, labelDict, SuccessNum #sucsess num could have offby1error keep an eye out
         SuccessNum += 1
     return ImageLabelDict, labelDict, SuccessNum
 
@@ -111,7 +109,7 @@ parser.add_argument('--points-path', dest='points_path', required=False)
 #FOR CROPPED EDGE IMAGES USE:
     #---->gs://wpiopenimageskaggle/ImagefilesEdge256x256/
 parser.add_argument('--images-input-path', dest='images_input_path', required=False)
-#parser.add_argument('--images-output-path', dest='images_output_path', required=False)
+parser.add_argument('--images-output-path', dest='images_output_path', required=False)
 
 #TO DEPLOY IN GCP ML ENGINE, MUST DELETE ALL LOCAL IMAGE FOLDERS AND 'PointAnnotationsSet"
 #TO RUN
@@ -121,23 +119,13 @@ parser.add_argument('--images-input-path', dest='images_input_path', required=Fa
 #3. >>> gcloud ml-engine jobs submit training $JOB_NAME --job-dir gs://mlengine_example_bucket --runtime-version 1.8 --module-name trainer.task --package-path trainer/ --region $REGION
 if __name__== "__main__":
     USEGCP(True) #SET TO TRUE WHEN USING GCP
-    pointsTest = read_file_JSON("PointAnnotationsLabel.txt") #create points from JSON: IDS are key, contains label/confidince/crop.
     points = read_file_JSON(imagePoint) #create points from JSON: IDS are key, contains label/confidince/crop.
     IdsFromLabels = CreateDictLabels(points) #creates a dictionary such that the key is a label, returns all IDS of that label
     #the batch function removes ids from the dictionary, so keep an eye on that.
     idsToRemoveFromEachBatch = IdsFromLabels.copy()
     # Creates a batch in ImageLabelDict in the format [ImageArr, ID]
-    ImageLabelDict, idsToRemoveFromEachBatch, SuccessNum = CreateBatchOfImages(3000, idsToRemoveFromEachBatch)
-    #ImageLabel = {1: [[0],'9eb39d618fd92994'], 2: [[0],'025a6cccec41134'], 3: [[0],'002200be72145198'], 4:[[0],'003d4acb635f05b7']}
-
-    
-    IdsFromLabelsTest = CreateDictLabels(points) #creates a dictionary such that the key is a label, returns all IDS of that label
-    #the batch function removes ids from the dictionary, so keep an eye on that.
-    idsToRemoveFromEachBatchTest = IdsFromLabelsTest.copy()
-    # Creates a batch in ImageLabelDict in the format [ImageArr, ID]
-    testDict, idsToRemoveFromEachBatchTest, SuccessNumTest = CreateBatchOfImages(3000, idsToRemoveFromEachBatchTest)
+    ImageLabelDict, idsToRemoveFromEachBatch, SuccessNum = CreateBatchOfImages(10, idsToRemoveFromEachBatch)
     #ImageLabel = {1: [[0],'9eb39d618fd92994'], 2: [[0],'025a6cccec41134'], 3: [[0],'002200be72145198'], 4:[[0],'003d4acb635f05b7']}
 
     #model.main(ImageLabel, getIDLabelDict(points), SuccessNum, "")
-    model.main(ImageLabelDict, getIDLabelDict(points), SuccessNum, "gs://mlclassifiertuning/imageIds/edgeResultsLabel/", testDict)
-
+model.main(ImageLabelDict, getIDLabelDict(points), SuccessNum, outputPath)
