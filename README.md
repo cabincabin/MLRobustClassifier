@@ -13,13 +13,14 @@
 - Saina Rezvani (srezvani@wpi.edu, @SainaRez)
 
 ### Introduction
-The effectiveness of modern machine learning image classifiers is heavily dependent on the degree to which the corpus is representative of the images being classified. When corpuses are not inclusive, models produce high rates of misclassification of images with low representation. Previous research completed on in this area include an exploration of gender <sup>1</sup> and geodiversity <sup>2</sup> related challenges. 
+The effectiveness of modern machine learning image classifiers is heavily dependent on the degree to which the corpus is representative of the images being classified. When corpuses are not inclusive, models produce high rates of misclassification of images with low representation. Previous research completed on in this area include an exploration of gender<sup>1</sup> and geodiversity<sup>2</sup> related challenges. 
 
-This team project focused on the development of robust image classification machine learning models to handle pictures from geographically diverse regions (primarily non-Americas and non-European). The inspiration for this project came from a Kaggle competition called the [Inclusive Images Challenge]( https://www.kaggle.com/c/inclusive-images-challenge). This is where information on the training and test image datasets can be found as well.
+This team project focused on the development of robust image classification machine learning models to handle pictures from geographically diverse regions (primarily non-Americas and non-European). The inspiration for this project came from a Kaggle competition called the [Inclusive Images Challenge](https://www.kaggle.com/c/inclusive-images-challenge). This is where information on the training and test image datasets can be found as well.
 
 The team developed a traditional Convolutional Neural Network (CNN) using Tensorflow and Keras. We also had to learn and utilize the Google Cloud Platform (GCP) services; the GCP services used were Cloud Storage and Model Training due to the enormous size of the Open Images dataset. The team hypothesized that emphasizing the structure (aka. features such as edges) would allow for better generalization. The results of this project work suggest that a method that augments the dataset to support generalization is likely a better approach.
 
-### Related Work
+### The Data
+The data used to complete this research project is part of the [Open Images dataset](https://storage.googleapis.com/openimages/web/index.html). As this is a very large dataset totaling over 500GB, our team had to use Google Cloud Platform with TensorFlow when implementing the models. Due to the technical hurdles and project scope, we implemented just a portion of the image dataset. The data was split into training and testing data sets for the dataset called "Train/Test." The real-world test dataset was gathered from the Kaggle competition page, which we combined with our training set to create the "Train/Tune" dataset.
 
 ### Methodology
 
