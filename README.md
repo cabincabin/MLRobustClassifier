@@ -33,6 +33,7 @@ In our project, we have two sets of images. One set is the grey scale version of
 ### Model
 ##### Preprocessing:
 In order to run the model, first we perform some preprocessing steps. The first step is extracting the training and testing data from the dictionary. We split the data and dedicate 25% of the data to testind and 75% to training. We reshape the data to only have the grayscale channel. Then we convert both datasets to type float. Finally we normalize the data to get values between 0 and 1.
+
 ##### Creating and training the model:
 After the prerprocessing steps, we create the model as a sequence of layers. The first two input layers are 2D convolution
 layers. Each creates a convolution kernel that convolves with the layer input to create the output. We used 32 filters for each convolution layer, a 3 by 3 convolution kernel and the relu activation function.
@@ -57,10 +58,18 @@ For the two main training sessions -- black and white images, and edge images --
 </p>
 These graphs are plotted from the instantanious loss calculated by KERAS, sampled every 500 images. Each batch per epoch used for training was a bootstrapped sample of 10,000 images from the dataset. Each "Step" in the loss graph corrisponds to the beginning of one of these batches. 
 
+For the results of our model, we split our training data into a training set, and a tuning set, then looked at the 
+8 following labels:
+
+      Person, Table, Tree, Building, Glasses, Boat, Insect, Dog
+
 <p align="center">
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/train_test_full.png"/>
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/train_test_edges.png"/>
 </p>
+
+Additionally, trained a second model without the split, then tested on the 1000 non-eurocentric images provided by kaggle, 
+again against the above 8 labels.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/train_tune_full.png"/>
