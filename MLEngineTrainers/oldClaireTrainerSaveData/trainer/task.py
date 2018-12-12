@@ -20,7 +20,7 @@ def USEGCP(UseGCP):
         global imageInputPath, imagePoint, outputPath
         imagePoint = "PointAnnotationsSet256x256.txt"
         imageInputPath = args.images_input_path#"gs://wpiopenimageskaggle/Imagefiles256x256/"
-        outputPath = args.images_output_path
+        #outputPath = args.images_output_path
 
 #Dumps a file to JSON format, used to get points from 'PointAnnotationsSet.txt'
 def read_file_JSON(filename):
@@ -109,7 +109,7 @@ parser.add_argument('--points-path', dest='points_path', required=False)
 #FOR CROPPED EDGE IMAGES USE:
     #---->gs://wpiopenimageskaggle/ImagefilesEdge256x256/
 parser.add_argument('--images-input-path', dest='images_input_path', required=False)
-parser.add_argument('--images-output-path', dest='images_output_path', required=False)
+#parser.add_argument('--images-output-path', dest='images_output_path', required=False)
 
 #TO DEPLOY IN GCP ML ENGINE, MUST DELETE ALL LOCAL IMAGE FOLDERS AND 'PointAnnotationsSet"
 #TO RUN
@@ -128,4 +128,4 @@ if __name__== "__main__":
     #ImageLabel = {1: [[0],'9eb39d618fd92994'], 2: [[0],'025a6cccec41134'], 3: [[0],'002200be72145198'], 4:[[0],'003d4acb635f05b7']}
 
     #model.main(ImageLabel, getIDLabelDict(points), SuccessNum, "")
-model.main(ImageLabelDict, getIDLabelDict(points), SuccessNum, outputPath)
+model.main(ImageLabelDict, getIDLabelDict(points), SuccessNum, "gs://mlclassifiertuning/imageIds/edgeResultsLabel/")
