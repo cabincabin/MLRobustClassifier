@@ -38,7 +38,12 @@ layers. Each creates a convolution kernel that convolves with the layer input to
 Our next input layer is MaxPooling2D which is used to reduce the number of parameters in the model. It uses a 2 by 2 sliding window and finds the maximum number of the 4 values.
 The next input layer is Dropout which normalizes the model and that helps prevent overfitting.
 We use Flatten as the next input layer to flatten the data into a 1D array.
-Finally our last model is Dense which takes in the final number of outputs which corresponds to the number of classes we use for classification.
+Finally our last model is Dense which takes in the final number of outputs which corresponds to the number of classes we use for classification. For this layer we use the softmax activation function to map inputs between 0 and 1.
+After adding all the input layers to our model, we compile the model with the sparse_categorical_crossentropy loss function and the adam optimizer. Based on the graph below adam performs better than the rest.
+<p align="center">
+<img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/Optimizers_graph.png" 
+width="400" height="370"/>
+</p>
 
 ### Results
 <p align="center">
