@@ -37,5 +37,23 @@ and Run the following command:
 Replacing the --trainable_classes_path if needed with the filepath to the LAbELSET created above.
 This will create 2 files, the first is a file called imagesSet.csv. This is a json file containing a paired image ID and url. The second is PointAnnotationsSet.txt, which is a JSON file conntainting an array of points: each point contains an ID and an annotation, which is an array of dicts that contains the bounding boxes and labels associated with the ID.
 
+To start uploading the files run the following in the cloud shell:
 
-    
+      curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+      python get-pip.py --user
+      pip install tqdm --user
+      pip install futures --user
+      gcloud auth login
+      
+and log into the google account with owner access to the current project. 
+
+Create a new screen and run the downloader by:
+
+      screen
+      python DownloadParallel.py --images_path imagesEdit/2017_07/test/imagesSet.csv --images_output_directory gs://<BUCKETNAME>/<IMAGESFOLDER>
+      
+Detach from the screen by
+      
+      ctl+a d
+
+Check the bucket and confirm the images are downloading. After a long couple hours you will be able to start on any feature engineering wanted before training the models
