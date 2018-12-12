@@ -29,8 +29,8 @@ The data used to complete this research project is part of the [Open Images data
 
 ### Results
 <p align="center">
-<img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/Training_Loss_ Full_Image.png" style="width:300px;height:175px;"/>
-<img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/Training_Loss_ Edge_Image.png" style="width:300px;height:175px;"/>
+<img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/Training_Loss_ Full_Image.png" width="300" height="175"/>
+<img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/Training_Loss_ Edge_Image.png" width="300" height="175"/>
 </p>
 
 
