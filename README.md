@@ -28,6 +28,12 @@ Each set of images was reduced down to 256x256, then was stored as black and whi
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/edge1.jpg"/>
 </p>
 
+### Image Processing
+In our project, we have two sets of images. One set is the grey scale version of images and one set is only object edges in the images. We croped the edge images to the given bounding boxes and resized them to 256 x 256 after. We resized the gray scale images set to 256 x 256 as well. Our motivation for finding the edges was to minimize information to decrease bias and generalize the images. For example for facail features skin tone would not play a part. 
+
+### Model
+
+
 ### Results
 <p align="center">
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/Training_Loss_ Full_Image.png" width="400" height="370"/>
