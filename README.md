@@ -22,8 +22,6 @@ The team developed a traditional Convolutional Neural Network (CNN) using Tensor
 ### The Data
 The data used to complete this research project is part of the [Open Images dataset](https://storage.googleapis.com/openimages/web/index.html). As this is a very large dataset totaling over 500GB, our team had to use Google Cloud Platform with TensorFlow when implementing the models. Due to the technical hurdles and project scope, we implemented just a portion of the image dataset. The data was split into training and testing data sets for the dataset called "Train/Test." The real-world test dataset was gathered from the Kaggle competition page, which we combined with our training set to create the "Train/Tune" dataset.
 
-### Methodology
-
 ### Results
 
 ### Conclusion
