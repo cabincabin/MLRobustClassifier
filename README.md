@@ -32,9 +32,9 @@ Each set of images was reduced down to 256x256, then was stored as black and whi
 In our project, we have two sets of images. One set is the grey scale version of images and one set is only object edges in the images. We croped the edge images to the given bounding boxes and resized them to 256 x 256 after. We resized the gray scale images set to 256 x 256 as well. Our motivation for finding the edges was to minimize information to decrease bias and generalize the images. For example for facail features skin tone would not play a part. 
 
 ### Model
-# Preprocessing:
+##### Preprocessing:
 In order to run the model, first we perform some preprocessing steps. The first step is extracting the training and testing data from the dictionary. We split the data and dedicate 25% of the data to testind and 75% to training. We reshape the data to only have the grayscale channel. Then we convert both datasets to type float. Finally we normalize the data to get values between 0 and 1.
-# Creating and training the model:
+##### Creating and training the model:
 After the prerprocessing steps, we create the model as a sequence of layers. The first two input layers are 2D convolution
 layers. Each creates a convolution kernel that convolves with the layer input to create the output. We used 32 filters for each convolution layer, a 3 by 3 convolution kernel and the relu activation function.
 Our next input layer is MaxPooling2D which is used to reduce the number of parameters in the model. It uses a 2 by 2 sliding window and finds the maximum number of the 4 values.
