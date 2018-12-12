@@ -19,17 +19,20 @@ from keras.utils import np_utils
 from keras.datasets import mnist
 from keras.callbacks import TensorBoard
 
-def main(ImageLabelDict, idDict, SuccessNum, outputModelInfoPath, testDict):
+def main(ImageLabelDict, idDict, SuccessNum, outputModelInfoPath):
     ###
     ## Extract training and testing data from dict
     ####
     keys=list(ImageLabelDict.keys())
     data=[]
+    labelNames=[]
     labels=[]
     label=0
+    ids = []
     #unpairs the time taken to pair images.
     #todo: REWRITE THIS SO WE KEEP THE ID'S PAIRED
     for val in keys:
+        labelNames.append(val)
         imgs=ImageLabelDict.get(val)
         for img in imgs:
             #print(img)
@@ -38,27 +41,8 @@ def main(ImageLabelDict, idDict, SuccessNum, outputModelInfoPath, testDict):
             #print(vec)
             data.append(vec)
             labels.append(label)
-        label+=1
-
-    data2 = []
-    labelNames = []
-    labels2 = []
-    label2 = 0
-    ids = []
-    # unpairs the time taken to pair images.
-    # todo: REWRITE THIS SO WE KEEP THE ID'S PAIRED
-    for val in keys:
-        labelNames.append(val)
-        imgs = testDict.get(val)
-        for img in imgs:
-            # print(img)
-            vec = img[0]
-            id = img[1]
-            # print(vec)
-            data2.append(vec)
-            labels2.append(label2)
             ids.append(id)
-        label2 += 1
+        label+=1
         
     ########
     ##
@@ -66,20 +50,26 @@ def main(ImageLabelDict, idDict, SuccessNum, outputModelInfoPath, testDict):
     ########
         
     total=len(data)
-
+    print(total)
+    train_size=round(total*0.75) # must be int type for np.random.choice
+    test_size=total-train_size
+    import random
+    random.seed(4)
   
-    train_ind=range(len(data))
-    test_ind=range(len(data2))
+    train_ind=np.random.choice(len(labels), int(train_size),replace=False)
+    test_ind=np.setdiff1d(list(range(0, total)),train_ind)
 
-    Y_train=np.array(labels)
-    Y_test= np.array(labels2)
-    X_train=np.array(data)
-    X_test= np.array(data2)
+    labels_test=np.array(labels)
+    data_test=np.array(data)
     #labelNames_test=np.array(labelNames)
-
+    
+    X_train=data_test[np.where(train_ind)]
+    X_test=data_test[np.where(test_ind)]
     X_testcp = X_test.copy()
     ids_test=ids#data_test[np.where(test_ind)]
 
+    Y_train=labels_test[np.where(train_ind)]
+    Y_test=labels_test[np.where(test_ind)]
     #labelNames_test=labels_test[np.where(test_ind)]
     
     ############
@@ -108,8 +98,8 @@ def main(ImageLabelDict, idDict, SuccessNum, outputModelInfoPath, testDict):
     # Then we normalize it so that the values are between 0 and 1
     X_train /= 255
     X_test /= 255
-
-
+    
+        
     ############
     ###  Run Keras Models
     ###
@@ -131,7 +121,7 @@ def main(ImageLabelDict, idDict, SuccessNum, outputModelInfoPath, testDict):
     model.add(Flatten())
     model.add(Dense(128, activation='relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(500, activation='softmax'))
+    model.add(Dense(600, activation='softmax'))
     # Final layer has the output size of 10 to correspond to the number of classes
 
     model.summary()
@@ -142,7 +132,7 @@ def main(ImageLabelDict, idDict, SuccessNum, outputModelInfoPath, testDict):
     # Evaluate the model on test data
     score = model.evaluate(X_test, Y_test, verbose=0)
     #generalInfo = model.summary() + '\n'
-
+    
     generalInfo = "test size:" + str(len(X_test)) + '\n'
     try:
         generalInfo += "test loss:" + str(score[0]) + '\n'
@@ -158,13 +148,13 @@ def main(ImageLabelDict, idDict, SuccessNum, outputModelInfoPath, testDict):
 #FORMAT IS A DICT WITH: id, predictions, indicies corr to which label is correct
     for index in range(len(X_testcp)):
         predictInfoDict = {}
-        predictInfoDict.setdefault('id', ids_test[index])
-        imgarr = np.array([data[index]])
+        predictInfoDict.setdefault('id', ids_test[test_ind[index]])
+        imgarr = np.array([data[test_ind[index]]])
         predictInfoDict.setdefault('PredictLabels', (model.predict(imgarr.reshape(1, img_len, img_width, 1))).tolist())
         #print(ids_test[index])
         #print(test_ind[index])
         #print(ids_test[test_ind[index]])
-        IdlabelNames = idDict[ids_test[index]]
+        IdlabelNames = idDict[ids_test[test_ind[index]]]
         #if (type(IdlabelNames) == type("oh My My My")):
         predictInfoDict.setdefault('correctIndicies', [labelNames.index(IdlabelNames)])
         #else:
@@ -177,7 +167,7 @@ def main(ImageLabelDict, idDict, SuccessNum, outputModelInfoPath, testDict):
     IdlabelPredictPath = outputModelInfoPath + "IdlabelPredict.txt"
     with file_io.FileIO(IdlabelPredictPath, mode='w') as infoFile:
         infoFile.write(json.dumps(IdLabelPredictions))
-
+        
     IdlabelPredictPath = outputModelInfoPath + "labelDict.txt"
     with file_io.FileIO(IdlabelPredictPath, mode='w') as infoFile:
         infoFile.write(json.dumps(labelNames))
@@ -189,4 +179,4 @@ def main(ImageLabelDict, idDict, SuccessNum, outputModelInfoPath, testDict):
     tbCallBack = TensorBoard(log_dir='./log', histogram_freq=1, write_graph=True, write_grads=True, batch_size=32, write_images=True)
 
     # We can use a call back to look into the internal state of the model during training
-    model.fit(X_train, Y_train, batch_size=32, epochs=10, verbose=1, validation_data=(X_test, Y_test), callbacks=[tbCallBack])
+model.fit(X_train, Y_train, batch_size=32, epochs=10, verbose=1, validation_data=(X_test, Y_test), callbacks=[tbCallBack])
