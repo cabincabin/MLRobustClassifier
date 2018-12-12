@@ -68,7 +68,7 @@ For the results of our model, we split our training data into a training set, an
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/train_test_edges.png"/>
 </p>
 
-Additionally, trained a second model without the split, then tested on the 1000 non-eurocentric images provided by kaggle, 
+Additionally, we trained a second model without the split, then tested on the 1000 non-eurocentric images provided by kaggle, 
 again against the above 8 labels.
 
 <p align="center">
@@ -77,6 +77,9 @@ again against the above 8 labels.
 </p>
 
 ### Discussion and Conclusion
+
+While we bootstrapped images for both our tuning and our testing datasets, we were able to choose our method and "seed" for bootstrapping the data. Because of this, the data results from each of the 4 above tests were gathered from models trained in the exact same way. Because of this, we get to directly compare the test results with one another, assured that each model was trained in the same way and in the same order. 
+In addition, each label has a separate number of images associated with it. One label could corrispond to 20,000 of the images used, while another could corrispond to only 10 of the images. This is a problem, as it means that, by training a label with proportionally more images, we could potentially skew the guesses of our label, so it would only guess what the model has seen the most. We, however, could not limit the number of images-per-label to the label with the smallest number of images, as the smallest label had magnitudes smaller images associatd with it, only 2 images. To solve this, we first examined the number of images per label, and realized it was a left skewed normal distribution (SEE FOLDER OTHER). Because of this, we chose the number of images per label to be the average of the mean and median of the distribution, at just over 4000 images per label. 
 
 
 ### To Run
