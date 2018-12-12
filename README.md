@@ -61,7 +61,7 @@ These graphs are plotted from the instantanious loss calculated by KERAS, sample
 For the results of our model, we split our training data into a training set, and a tuning set, then looked at the 
 8 following labels:
 
-      Person, Table, Tree, Building, Glasses, Boat, Insect, Dog
+          Person, Table, Tree, Building, Glasses, Boat, Insect, Dog
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/train_test_full.png"/>
