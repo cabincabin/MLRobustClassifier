@@ -9,7 +9,7 @@ To learn more about ML Engine:
 ## Steps to run oldClaireTrainerSaveData
 The steps below assume there exists a GCS (Google Cloud Storage) bucket that contains the input images and "PointAnnotationsSet" text file. 
 
-### Zip contents and upload to Cloud Shell
+### Zip contents and upload to Cloud Shell or Clone from git
 Within your local file directory, zip the folder "oldClaireTrainerSaveData" in a .zip file. Then log into the [GCP Console web dashboard](https://console.cloud.google.com/home/), and click "Activate Cloud Shell" in the top-right corner. In this Terminal console window, click the "3 vertical dots" icon and select "Upload File". Upload the .zip file and unzip the contents. Then execute the following shell commands.
 
 ```shell
@@ -19,6 +19,16 @@ cd oldClaireTrainerSaveData/
 
 ### Install dependencies
 Install the python dependencies via: `pip install --user -r requirements.txt`
+
+### Modify the files to suit your needs
+In trainer/model.py, if you created a custom number of labels, change line 134
+
+     model.add(Dense(500, activation='softmax'))
+     
+to have the number of labels specified in the custom labels
+
+in trainer/task.py
+
 
 ### Configuration Variables
 Run the following shell script within the Cloud Shell:
