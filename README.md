@@ -52,7 +52,7 @@ width="700" height="370"/>
 
 In the next step, we fit the model to our training data with 10 epochs and we evaluated the training accuracy to see how well the model fit to the training data. We also used callbacks to understand the internal state of the model while it was training on the image data. 
 
-For predicting labels we have a list of dictionaries. The dictionary includes the id, the prediction and the index of the correct label. Then we put the label name and the preidcted label into a json file.
+For predicting labels we have a list of dictionaries. Each dictionary includes the id, the prediction and the index of the correct label. Then we put the label name and the preidcted label into a json file.
 
 ### Results
 For the two main training sessions -- black and white images, and edge images -- the following loss graphs were made. 
