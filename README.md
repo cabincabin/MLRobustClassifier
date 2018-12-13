@@ -27,7 +27,7 @@ The data used to complete this research project is part of the [Open Images data
 
 
 ### Image Processing
-In our project, we have two sets of images. One set is the grey scale version of images and one set is only object edges in the images. We cropped the edge images and gray scale images to the given bounding boxes and resized them to 256 x 256 dimensions. Our motivation for finding the edges was to minimize information to decrease bias and to generalize the semantic meaning of the images. In this way, we would focus purely on the shape of the objects passed into the model, and not the tonality. For example, with facial features, skin tone would not play a part. 
+In our project, we have two sets of images. One set is the gray scale version of images and one set is only object edges in the images. We cropped the edge images and gray scale images to the given bounding boxes and resized them to 256 x 256 dimensions. Our motivation for finding the edges was to minimize information to decrease bias and to generalize the semantic meaning of the images. In this way, we would focus purely on the shape of the objects passed into the model, and not the tonality. For example, with facial features, skin tone would not play a part. 
 <p align="center">
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/full1.jpg"/>
 <img src="https://raw.githubusercontent.com/cabincabin/MLRobustClassifier/master/img/edge1.jpg"/>
